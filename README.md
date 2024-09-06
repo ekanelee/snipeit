@@ -1,2 +1,2 @@
-# snipeit
-Deploy snipeit on a webapp through Azure DevOps pipelines 
+# snipe-it
+Deploy snipe-it on a webapp through Azure DevOps pipelines 
