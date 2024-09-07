@@ -1,0 +1,7 @@
+resourceGroupName: SnipeIT
+location: canadaeast
+vmImageName: ubuntu-latest
+mysqserverlName: snipeit-server-ekane
+mysqllogin: Admin
+mysqlpassword: ekane123
+tag: snipe-it
