@@ -12,7 +12,7 @@ jobs:
   pool:
     vmImage: $(vmImageName)
   variables:
-    - template: ../vars/pipelines/variables.yml
+    - template: ../pipelines/vars/variables.yml
       parameters:
         env: ${{ parameters.env }}
   
