@@ -45,23 +45,18 @@ jobs:
 
       - task: AzureCLI@2
         inputs:
-          azureSubscription: '<YourAzureSubscription>'
+          azureSubscription: ${{ parameters.servConn }}
+          displayName: Download ssl cert
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
+            STORAGE_ACCOUNT_KEY=$(az storage account keys list --resource-group "$(resourceGroupName)" --account-name $(SnipeITStorageAccount_name) --query '[0].value' --output tsv)
             # Download the SSL certificate
             wget https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -O DigiCertGlobalRootCA.crt.pem
-
-            # Install Azure CLI if not already installed
-            if ! command -v az &> /dev/null
-            then
-                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-            fi
-
             # Upload the SSL certificate to the Azure Files share
-            az storage file upload \
-              --account-name <YourStorageAccountName> \
-              --account-key <YourStorageAccountKey> \
-              --share-name snipeit \
+            az storage file upload `
+              --account-name $(SnipeITStorageAccount_name) `
+              --account-key $STORAGE_ACCOUNT_KEY `
+              --share-name snipeit `
               --source DigiCertGlobalRootCA.crt.pem
 
