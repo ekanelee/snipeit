@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  snipe-it:
+    image: snipe/snipe-it:latest
+    volumes:
+      - snipeit:/var/lib/snipeit
+      - snipeit-logs:/var/www/html/storage/logs
+
+volumes:
+  snipeit:
+    external: true
+  snipeit-logs:
+    external: true
