@@ -1,7 +1,13 @@
-resourceGroupName: SnipeIT
-location: canadaeast
-vmImageName: ubuntu-latest
-mysqserverlName: snipeit-server-ekane
-mysqllogin: Admin
-mysqlpassword: ekane123
-tag: snipe-it
+variables:
+  resourceGroupName: SnipeIT
+  location: canadaeast
+  vmImageName: ubuntu-latest
+  mysqserverlName: snipeit-server-ekane
+  mysqllogin: Admin
+  mysqlpassword: ekane123
+  tag: SnipeIT
+  SnipeITStorageAccount_name: ekanesnipestorageacc
+  SnipeITDB_name: ekanemysqldb
+  SnipeITServerFarm_name: ekaneapplan
+  SnipeITWebsite_name: ekanewebapp
+  templatesDir: $(Build.SourcesDirectory)/snipe-it/arm-templates

@@ -5,15 +5,9 @@ param mysqllogin string
 @secure()
 param mysqlpassword string
 param SnipeITStorageAccount_name string
-param SnipeITMySQLServer_name string
 param SnipeITDB_name string
 param SnipeITServerFarm_name string
 param SnipeITWebsite_name string
-param SnipeITMySQLLogin string
-@secure()
-param SnipeITMySQLPassword string
-param SnipeITAppKey string
-param SendGridAPIKey string
 
 var dockerFile = loadFileAsBase64('./DockerCompose.yml')
 var DockerComposeString = 'COMPOSE|${dockerFile}'
@@ -87,7 +81,6 @@ resource SnipeITStorageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = 
         accessTier: 'Hot'
     }
 
-    // Nested deployments implicitly depend on parent resource
 
     // Nested deployment of file services for the storage account
     resource SnipeITStorageAccountFileServices 'fileServices' = {
@@ -205,17 +198,16 @@ resource SonarQubeWebSite 'Microsoft.Web/sites@2022-09-01' = {
         name: 'appsettings'
         properties: {
             APP_DEBUG: 'false'
-            APP_KEY: SnipeITAppKey
             APP_URL: 'https://${SnipeITWebsite_name}.azurewebsites.net'
             DB_CONNECTION: 'mysql'
             DB_SSL: 'true'
             DB_SSL_IS_PAAS: 'true'
             DB_SSL_CA_PATH: '/var/lib/snipeit/DigiCertGlobalRootCA.crt.pem'
             MYSQL_DATABASE: SnipeITDB_name
-            MYSQL_USER: SnipeITMySQLLogin
-            MYSQL_PASSWORD: SnipeITMySQLPassword
+            MYSQL_USER: mysqllogin
+            MYSQL_PASSWORD: mysqlpassword
 
-            MYSQL_PORT_3306_TCP_ADDR: '${SnipeITMySQLServer_name}.mysql.database.azure.com'
+            MYSQL_PORT_3306_TCP_ADDR: '${mysqserverlName}.mysql.database.azure.com'
             MYSQL_PORT_3306_TCP_PORT: '3306'
 
             DOCKER_REGISTRY_SERVER_URL: 'https://index.docker.io/'
@@ -228,7 +220,6 @@ resource SonarQubeWebSite 'Microsoft.Web/sites@2022-09-01' = {
             MAIL_PORT_587_TCP_ADDR: 'smtp.sendgrid.net'
             MAIL_PORT_587_TCP_PORT: '587' 
             MAIL_ENV_USERNAME: 'apikey' 
-            MAIL_ENV_PASSWORD: SendGridAPIKey
             MAIL_ENV_FROM_ADDR: 'alerts@mydomain.com'
             MAIL_ENV_FROM_NAME: 'Snipe IT'
         }
