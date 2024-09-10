@@ -1,0 +1,11 @@
+name: Deploy SnipeIT Infra
+
+trigger: none 
+
+stages:
+- stage: Deploy 
+  jobs:
+    - template: release-infra-template.yml
+      parameters:
+        env: 'dev'
+        servConn: snipeit-serv

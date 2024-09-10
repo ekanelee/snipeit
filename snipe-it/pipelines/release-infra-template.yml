@@ -13,6 +13,7 @@ jobs:
       vmImage: $(vmImageName)
     variables:
       - template: ../vars/variables.yml
+        system.debug: true
         parameters:
           env: ${{ parameters.env }}
    
@@ -25,15 +26,42 @@ jobs:
           scriptLocation: inlineScript
           inlineScript: az group create --name "$(resourceGroupName)" --location "$(location)"
 
-      - task: AzureCLI@2
-        displayName: Create mysql flexible-server
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: Deploy infrastructure
         inputs:
-          azureSubscription: ${{ parameters.servConn }}
-          scriptType: pscore
-          scriptLocation: inlineScript
+          azureResourceManagerConnection: ${{ parameters.servConn }}
+          resourceGroupName: $(resourceGroupName)
+          location: $(location)
+          csmFile: "$(templatesDir)/infra.bicep"
+          overrideParameters: >
+            -SnipeITStorageAccount_name $(SnipeITStorageAccount_name)
+            -SnipeITServerFarm_name $(SnipeITServerFarm_name)
+            -SnipeITDB_name $(SnipeITDB_name)
+            -SnipeITWebsite_name $(SnipeITWebsite_name)
+            -mysqllogin $(mysqllogin)
+            -mysqlpassword $(mysqlpassword)
+            -mysqserverlName $(mysqserverlName)
+          deploymentName: "DeployPipelineTemplate"
+
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: '<YourAzureSubscription>'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
           inlineScript: |
-            az mysql flexible-server create --location $(location) --resource-group $(resourceGroupName) `
-            --name $(mysqserverlName) --admin-user $(mysqllogin) --admin-password $(mysqlpassword) --sku-name Standard_B1ms `
-            --tier Burstable --public-access 0.0.0.0 --storage-size 30 --tags "project=$(tag)" --version 5.7 ` 
-            --storage-auto-grow Enabled --iops 360
-      
+            # Download the SSL certificate
+            wget https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -O DigiCertGlobalRootCA.crt.pem
+
+            # Install Azure CLI if not already installed
+            if ! command -v az &> /dev/null
+            then
+                curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+            fi
+
+            # Upload the SSL certificate to the Azure Files share
+            az storage file upload \
+              --account-name <YourStorageAccountName> \
+              --account-key <YourStorageAccountKey> \
+              --share-name snipeit \
+              --source DigiCertGlobalRootCA.crt.pem
+
