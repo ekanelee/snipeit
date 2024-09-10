@@ -11,3 +11,4 @@ variables:
   SnipeITServerFarm_name: ekaneapplan
   SnipeITWebsite_name: ekanewebapp
   templatesDir: $(Build.SourcesDirectory)/snipe-it/arm-templates
+  system.debug: true

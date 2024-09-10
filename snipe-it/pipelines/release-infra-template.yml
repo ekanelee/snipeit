@@ -4,9 +4,7 @@ parameters:
     displayName: Environment (dev, prd)
   - name: servConn
     type: string
-    displayName: Connection
-  - system.debug: true
-  
+    displayName: Connection  
 
 jobs:
 - job: Deploy_${{ parameters.env }}_services
