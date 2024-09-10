@@ -5,58 +5,59 @@ parameters:
   - name: servConn
     type: string
     displayName: Connection
+  - system.debug: true
+  
 
 jobs:
-  - job: Deploy_${{ parameters.env }}_services
-    displayName: SnipeIT ${{ parameters.env }} Infra
-    pool:
-      vmImage: $(vmImageName)
-    variables:
-      - template: ../vars/variables.yml
-        system.debug: true
-        parameters:
-          env: ${{ parameters.env }}
-   
-    steps:
-      - task: AzureCLI@2
-        displayName: Create Resource Group
-        inputs:
-          azureSubscription: ${{ parameters.servConn }}
-          scriptType: pscore
-          scriptLocation: inlineScript
-          inlineScript: az group create --name "$(resourceGroupName)" --location "$(location)"
+- job: Deploy_${{ parameters.env }}_services
+  displayName: SnipeIT ${{ parameters.env }} Infra
+  pool:
+    vmImage: $(vmImageName)
+  variables:
+    - template: ../vars/variables.yml
+      parameters:
+        env: ${{ parameters.env }}
+  
+  steps:
+    - task: AzureCLI@2
+      displayName: Create Resource Group
+      inputs:
+        azureSubscription: ${{ parameters.servConn }}
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: az group create --name "$(resourceGroupName)" --location "$(location)"
 
-      - task: AzureResourceManagerTemplateDeployment@3
-        displayName: Deploy infrastructure
-        inputs:
-          azureResourceManagerConnection: ${{ parameters.servConn }}
-          resourceGroupName: $(resourceGroupName)
-          location: $(location)
-          csmFile: "$(templatesDir)/infra.bicep"
-          overrideParameters: >
-            -SnipeITStorageAccount_name $(SnipeITStorageAccount_name)
-            -SnipeITServerFarm_name $(SnipeITServerFarm_name)
-            -SnipeITDB_name $(SnipeITDB_name)
-            -SnipeITWebsite_name $(SnipeITWebsite_name)
-            -mysqllogin $(mysqllogin)
-            -mysqlpassword $(mysqlpassword)
-            -mysqserverlName $(mysqserverlName)
-          deploymentName: "DeployPipelineTemplate"
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy infrastructure
+      inputs:
+        azureResourceManagerConnection: ${{ parameters.servConn }}
+        resourceGroupName: $(resourceGroupName)
+        location: $(location)
+        csmFile: "$(templatesDir)/infra.bicep"
+        overrideParameters: >
+          -SnipeITStorageAccount_name $(SnipeITStorageAccount_name)
+          -SnipeITServerFarm_name $(SnipeITServerFarm_name)
+          -SnipeITDB_name $(SnipeITDB_name)
+          -SnipeITWebsite_name $(SnipeITWebsite_name)
+          -mysqllogin $(mysqllogin)
+          -mysqlpassword $(mysqlpassword)
+          -mysqserverlName $(mysqserverlName)
+        deploymentName: "DeployPipelineTemplate"
 
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: ${{ parameters.servConn }}
-          displayName: Download ssl cert
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
-            STORAGE_ACCOUNT_KEY=$(az storage account keys list --resource-group "$(resourceGroupName)" --account-name $(SnipeITStorageAccount_name) --query '[0].value' --output tsv)
-            # Download the SSL certificate
-            wget https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -O DigiCertGlobalRootCA.crt.pem
-            # Upload the SSL certificate to the Azure Files share
-            az storage file upload `
-              --account-name $(SnipeITStorageAccount_name) `
-              --account-key $STORAGE_ACCOUNT_KEY `
-              --share-name snipeit `
-              --source DigiCertGlobalRootCA.crt.pem
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: ${{ parameters.servConn }}
+        displayName: Download ssl cert
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          STORAGE_ACCOUNT_KEY=$(az storage account keys list --resource-group "$(resourceGroupName)" --account-name $(SnipeITStorageAccount_name) --query '[0].value' --output tsv)
+          # Download the SSL certificate
+          wget https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -O DigiCertGlobalRootCA.crt.pem
+          # Upload the SSL certificate to the Azure Files share
+          az storage file upload `
+            --account-name $(SnipeITStorageAccount_name) `
+            --account-key $STORAGE_ACCOUNT_KEY `
+            --share-name snipeit `
+            --source DigiCertGlobalRootCA.crt.pem
 
