@@ -41,6 +41,7 @@ jobs:
           -mysqlpassword $(mysqlpassword)
           -mysqserverlName $(mysqserverlName)
           -location $(location)
+          -tag $(tag)
         deploymentName: "DeployPipelineTemplate"
 
     - task: AzureCLI@2
