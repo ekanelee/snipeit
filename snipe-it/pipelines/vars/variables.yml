@@ -3,7 +3,7 @@ variables:
   location: canadaeast
   vmImageName: ubuntu-latest
   mysqserverlName: snipeit-server-ekane
-  mysqllogin: Admin
+  mysqllogin: Ekanelee
   mysqlpassword: ekane123
   tag: SnipeIT
   SnipeITStorageAccount_name: ekanesnipestorageacc
