@@ -52,12 +52,13 @@ jobs:
         scriptLocation: 'inlineScript'
         inlineScript: |
           STORAGE_ACCOUNT_KEY=$(az storage account keys list --resource-group "$(resourceGroupName)" --account-name $(SnipeITStorageAccount_name) --query '[0].value' --output tsv)
+          Write-Host "Stored syorage acc keys"
           # Download the SSL certificate
-          wget https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -O DigiCertGlobalRootCA.crt.pem
+          wget https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -O $(Pipeline.Workspace)/DigiCertGlobalRootCA.crt.pem
           # Upload the SSL certificate to the Azure Files share
           az storage file upload `
             --account-name $(SnipeITStorageAccount_name) `
             --account-key $STORAGE_ACCOUNT_KEY `
             --share-name snipeit `
-            --source DigiCertGlobalRootCA.crt.pem
+            --source $(Pipeline.Workspace)/DigiCertGlobalRootCA.crt.pem
 
