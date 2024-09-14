@@ -197,7 +197,7 @@ resource SonarQubeWebSite 'Microsoft.Web/sites@2022-09-01' = {
     resource SnipeITWebsiteAppSettings 'config@2021-02-01' = {
         name: 'appsettings'
         properties: {
-            APP_DEBUG: 'true'
+            APP_DEBUG: 'false'
             APP_URL: 'https://${SnipeITWebsite_name}.azurewebsites.net'
             APP_KEY: 'base64:6M3RwWh4re1FQGMTent3hON9D7ZJJDHxW1123456789='
             DB_CONNECTION: 'mysql'
