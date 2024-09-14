@@ -48,7 +48,7 @@ jobs:
       inputs:
         azureSubscription: ${{ parameters.servConn }}
         displayName: Download ssl cert
-        scriptType: 'bash'
+        scriptType: pscore
         scriptLocation: 'inlineScript'
         inlineScript: |
           STORAGE_ACCOUNT_KEY=$(az storage account keys list --resource-group "$(resourceGroupName)" --account-name $(SnipeITStorageAccount_name) --query '[0].value' --output tsv)
