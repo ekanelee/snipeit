@@ -8,4 +8,4 @@ stages:
     - template: release-infra-template.yml
       parameters:
         env: 'dev'
-        servConn: snipeit-serv
+        servConn: # Your service Connection
