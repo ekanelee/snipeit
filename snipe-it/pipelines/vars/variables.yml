@@ -1,14 +1,16 @@
 variables:
-  resourceGroupName: SnipeIT
-  location: canadaeast
-  vmImageName: ubuntu-latest
-  mysqserverlName: snipeit-server-ekane
-  mysqllogin: Ekanelee
-  mysqlpassword: ekane123
+  resourceGroupName: ''
+  location: ''
+  vmImageName: ''
+  mysqserverlName: ''
+  mysqllogin: ''
+  mysqlpassword: ''
   tag: SnipeIT
-  SnipeITStorageAccount_name: ekanesnipestorageacc
-  SnipeITDB_name: ekanemysqldb
-  SnipeITServerFarm_name: ekaneapplan
-  SnipeITWebsite_name: ekanewebapp
+  SnipeITStorageAccount_name: ''
+  SnipeITDB_name: ''
+  SnipeITServerFarm_name: ''
+  SnipeITWebsite_name: ''
   templatesDir: $(Build.SourcesDirectory)/snipe-it/arm-templates
   system.debug: true
+
+# Replace all the '' with your values
